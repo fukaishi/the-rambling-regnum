@@ -158,7 +158,21 @@ function App() {
     }
 
     if (dialogue) {
-      return DIALOGUES[dialogue].messages[dialogueIndex]
+      const currentDialogue = DIALOGUES[dialogue]
+      const message = currentDialogue.messages[dialogueIndex]
+
+      // 会話の最後のメッセージの場合、次の行動を示す
+      if (dialogueIndex === currentDialogue.messages.length - 1) {
+        if (dialogue === 'mother') {
+          return message + '\n\n（Enterキーで会話終了 → 矢印キーで移動できます）'
+        } else if (dialogue === 'king') {
+          return message + '\n\n（Enterキーで会話終了 → 矢印キーで移動できます）'
+        } else if (dialogue === 'boss') {
+          return message + '\n\n（Enterキーでバトル開始）'
+        }
+      }
+
+      return message
     }
 
     if (battleState === 'playerTurn') {
@@ -167,14 +181,14 @@ function App() {
 
     // ヒント表示
     if (!talkedToMother) {
-      return '矢印キーで移動 / 母親に近づいてEnterキーで話す'
+      return '【移動フェーズ】\n矢印キー (↑↓←→) で移動してください\n母親に近づいてEnterキーで話しかけましょう'
     } else if (!talkedToKing) {
-      return '矢印キーで移動 / 王様に近づいてEnterキーで話す'
+      return '【移動フェーズ】\n矢印キー (↑↓←→) で移動してください\n上に進んで王様に会いに行きましょう'
     } else if (!bossDefeated) {
-      return '矢印キーで移動 / 魔王に近づいてEnterキーで話す'
+      return '【移動フェーズ】\n矢印キー (↑↓←→) で移動してください\nさらに上に進んで魔王を倒しに行きましょう'
     }
 
-    return '世界に平和が訪れた...'
+    return '【ゲームクリア】\n世界に平和が訪れた...'
   }
 
   const getCurrentSpeaker = () => {
