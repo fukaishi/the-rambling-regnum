@@ -117,29 +117,37 @@ function App() {
 
     let newX = heroPos.x
     let newY = heroPos.y
+    let moved = false
 
     if (e.key === 'ArrowUp') {
       e.preventDefault()
       newY = Math.max(0, heroPos.y - 1)
+      moved = true
     } else if (e.key === 'ArrowDown') {
       e.preventDefault()
       newY = Math.min(MAP_HEIGHT - 1, heroPos.y + 1)
+      moved = true
     } else if (e.key === 'ArrowLeft') {
       e.preventDefault()
       newX = Math.max(0, heroPos.x - 1)
+      moved = true
     } else if (e.key === 'ArrowRight') {
       e.preventDefault()
       newX = Math.min(MAP_WIDTH - 1, heroPos.x + 1)
+      moved = true
     }
 
-    // NPCとの衝突判定（すり抜け不可）
-    const collidesWithNPC =
-      (newX === motherPos.x && newY === motherPos.y) ||
-      (newX === kingPos.x && newY === kingPos.y) ||
-      (newX === bossPos.x && newY === bossPos.y && !bossDefeated)
+    // 矢印キーが押された場合のみ移動処理
+    if (moved) {
+      // NPCとの衝突判定（すり抜け不可）
+      const collidesWithNPC =
+        (newX === motherPos.x && newY === motherPos.y) ||
+        (newX === kingPos.x && newY === kingPos.y) ||
+        (newX === bossPos.x && newY === bossPos.y && !bossDefeated)
 
-    if (!collidesWithNPC) {
-      setHeroPos({ x: newX, y: newY })
+      if (!collidesWithNPC) {
+        setHeroPos({ x: newX, y: newY })
+      }
     }
   }, [gameState, heroAwake, dialogue, dialogueIndex, battleState, heroPos, bossHP, talkedToMother, talkedToKing, bossDefeated, motherPos, kingPos, bossPos])
 
