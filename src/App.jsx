@@ -17,6 +17,8 @@ function App() {
   const [battleState, setBattleState] = useState(null)
   const [bossHP, setBossHP] = useState(3)
   const [bossDefeated, setBossDefeated] = useState(false)
+  const [displayedText, setDisplayedText] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
 
   // NPCの位置
   const motherPos = { x: 11, y: 12 }
@@ -30,6 +32,13 @@ function App() {
     // エンターキー
     if (e.key === 'Enter') {
       e.preventDefault()
+
+      // タイプ中なら即座に全文表示
+      if (isTyping) {
+        setDisplayedText(getCurrentMessage())
+        setIsTyping(false)
+        return
+      }
 
       // 寝ている状態から起きる
       if (!heroAwake) {
@@ -149,7 +158,7 @@ function App() {
         setHeroPos({ x: newX, y: newY })
       }
     }
-  }, [gameState, heroAwake, dialogue, dialogueIndex, battleState, heroPos, bossHP, talkedToMother, talkedToKing, bossDefeated, motherPos, kingPos, bossPos])
+  }, [gameState, heroAwake, dialogue, dialogueIndex, battleState, heroPos, bossHP, talkedToMother, talkedToKing, bossDefeated, motherPos, kingPos, bossPos, isTyping])
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown)
@@ -205,6 +214,28 @@ function App() {
     }
     return null
   }
+
+  // タイプライター効果
+  useEffect(() => {
+    const fullMessage = getCurrentMessage()
+    setDisplayedText('')
+    setIsTyping(true)
+
+    let currentIndex = 0
+    const typingSpeed = 50 // ミリ秒
+
+    const timer = setInterval(() => {
+      if (currentIndex < fullMessage.length) {
+        setDisplayedText(fullMessage.substring(0, currentIndex + 1))
+        currentIndex++
+      } else {
+        setIsTyping(false)
+        clearInterval(timer)
+      }
+    }, typingSpeed)
+
+    return () => clearInterval(timer)
+  }, [heroAwake, dialogue, dialogueIndex, battleState, bossHP, talkedToMother, talkedToKing, bossDefeated])
 
   return (
     <div className="game-container">
@@ -329,7 +360,7 @@ function App() {
               </div>
             )}
             <div className="message-content">
-              <div className="message-text">{getCurrentMessage()}</div>
+              <div className="message-text">{displayedText}</div>
             </div>
           </div>
         </div>
